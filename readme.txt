@@ -3,10 +3,21 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.4.2 ==
+
+* Robustesse : le filtre qui remplace Gutenberg par le constructeur
+  s'execute desormais en toute derniere priorite, pour eviter qu'un
+  autre plugin (ex. Classic Editor, ou un reglage du theme) ne reactive
+  Gutenberg apres coup sur certains types de contenus.
+* Rappel important : ce remplacement ne s'active JAMAIS automatiquement
+  sur du contenu deja existant, uniquement sur les nouveaux contenus
+  crees apres l'activation, ou si vous cochez vous-meme "Activer le
+  constructeur visuel" sur un contenu existant.
 
 == Nouveautes 1.4.1 ==
 
