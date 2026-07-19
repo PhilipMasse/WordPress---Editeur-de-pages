@@ -3,10 +3,19 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.4.1 ==
+
+* Le constructeur est desormais disponible sur les Actualites (type de
+  contenu "actualite") et les Evenements (type de contenu "agenda"), en
+  plus des Pages et Articles. Comme pour les autres types de contenus :
+  toute nouvelle actualite/evenement cree apres cette mise a jour aura le
+  constructeur active par defaut ; les actualites/evenements existants ne
+  sont pas modifies automatiquement.
 
 == Nouveautes 1.4.0 : plus d'options dans chaque bloc ==
 
