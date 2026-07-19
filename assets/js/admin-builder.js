@@ -10,6 +10,11 @@
 
 	var $canvas, $app, $hiddenField, $panelOverlay, $panel;
 
+	// Definitions des sous-champs de chaque champ "repeater" actuellement affiche
+	// (indexees par cle de champ), utilisees pour construire les nouveaux
+	// elements ajoutes dynamiquement (bouton "+ Ajouter").
+	var repeaterFieldDefs = {};
+
 	function uid( prefix ) {
 		return prefix + '_' + Math.random().toString( 36 ).substr( 2, 9 );
 	}
@@ -160,6 +165,13 @@
 			case 'list':
 				var count = ( s.items || '' ).split( '\n' ).filter( function ( v ) { return v.trim() !== ''; } ).length;
 				return count ? esc( count + ' element(s)' ) : empty;
+			case 'accordion':
+				var qCount = ( s.items || [] ).filter( function ( it ) { return it.question && it.question.trim() !== ''; } ).length;
+				return qCount ? esc( qCount + ' question(s)' ) : empty;
+			case 'social':
+				var platforms = [ 'facebook', 'twitter', 'instagram', 'youtube', 'linkedin', 'rss' ];
+				var pCount = platforms.filter( function ( p ) { return s[ p ]; } ).length;
+				return pCount ? esc( pCount + ' reseau(x)' ) : empty;
 			default:
 				return '';
 		}
@@ -435,6 +447,19 @@
 				html += '</div>';
 				break;
 
+			case 'repeater':
+				var repItems = ( Array.isArray( value ) && value.length ) ? value : ( def.default || [] );
+				repeaterFieldDefs[ key ] = def.item_fields || {};
+				html += '<div class="spb-repeater" data-key="' + key + '">';
+				html += '<div class="spb-repeater-items">';
+				repItems.forEach( function ( item, idx ) {
+					html += renderRepeaterItemHtml( def.item_fields || {}, item, idx );
+				} );
+				html += '</div>';
+				html += '<button type="button" class="button spb-repeater-add"><span class="dashicons dashicons-plus-alt2"></span> ' + esc( i18n.addItem || 'Ajouter' ) + '</button>';
+				html += '</div>';
+				break;
+
 			case 'image':
 				html += '<div class="spb-image-field" data-key="' + key + '" data-value="' + ( value || 0 ) + '">';
 				html += '<div class="spb-image-preview"></div>';
@@ -448,8 +473,64 @@
 		return html;
 	}
 
+	/**
+	 * Construit le HTML d'un sous-champ a l'interieur d'un element de repeteur
+	 * (version simplifiee de buildFieldHtml, pour les types les plus courants).
+	 */
+	function buildRepeaterSubfieldHtml( subkey, def, value ) {
+		var html = '<div class="spb-subfield">';
+		html += '<label>' + esc( def.label ) + '</label>';
+
+		if ( 'textarea' === def.type ) {
+			html += '<textarea data-subkey="' + subkey + '" rows="3" placeholder="' + esc( def.placeholder || '' ) + '">' + esc( value || '' ) + '</textarea>';
+		} else if ( 'select' === def.type ) {
+			html += '<select data-subkey="' + subkey + '">';
+			Object.keys( def.options ).forEach( function ( ok ) {
+				var sel = ok === value ? ' selected' : '';
+				html += '<option value="' + esc( ok ) + '"' + sel + '>' + esc( def.options[ ok ] ) + '</option>';
+			} );
+			html += '</select>';
+		} else if ( 'checkbox' === def.type ) {
+			var checked = value ? ' checked' : '';
+			html += '<label class="spb-checkbox-label"><input type="checkbox" data-subkey="' + subkey + '"' + checked + ' /> ' + esc( def.label ) + '</label>';
+		} else if ( 'color' === def.type ) {
+			html += '<input type="text" class="spb-color-field" data-subkey="' + subkey + '" value="' + esc( value || '' ) + '" />';
+		} else {
+			html += '<input type="text" data-subkey="' + subkey + '" value="' + esc( value || '' ) + '" placeholder="' + esc( def.placeholder || '' ) + '" />';
+		}
+
+		html += '</div>';
+		return html;
+	}
+
+	function renderRepeaterItemHtml( itemFields, item, idx ) {
+		item = item || {};
+		var html = '<div class="spb-repeater-item">';
+		html += '<div class="spb-repeater-item-head">';
+		html += '<span class="spb-repeater-item-title">#' + ( idx + 1 ) + '</span>';
+		html += '<span class="spb-repeater-item-actions">';
+		html += '<button type="button" class="spb-icon-btn spb-repeater-up" title="Monter"><span class="dashicons dashicons-arrow-up-alt2"></span></button>';
+		html += '<button type="button" class="spb-icon-btn spb-repeater-down" title="Descendre"><span class="dashicons dashicons-arrow-down-alt2"></span></button>';
+		html += '<button type="button" class="spb-icon-btn spb-repeater-remove" title="Supprimer"><span class="dashicons dashicons-trash"></span></button>';
+		html += '</span></div>';
+		html += '<div class="spb-repeater-item-fields">';
+		Object.keys( itemFields ).forEach( function ( fk ) {
+			html += buildRepeaterSubfieldHtml( fk, itemFields[ fk ], item[ fk ] );
+		} );
+		html += '</div></div>';
+		return html;
+	}
+
+	function reindexRepeaterDisplay( $items ) {
+		$items.children( '.spb-repeater-item' ).each( function ( i ) {
+			$( this ).find( '.spb-repeater-item-title' ).first().text( '#' + ( i + 1 ) );
+		} );
+	}
+
 	function openSettingsPanel( kind, id ) {
 		var target, fieldDefs, title, values;
+
+		repeaterFieldDefs = {};
 
 		if ( 'row' === kind ) {
 			target = findRowById( id );
@@ -583,6 +664,21 @@
 				target.settings[ key ] = parseInt( $input.attr( 'data-value' ), 10 ) || 0;
 			} else if ( $input.hasClass( 'spb-icon-field' ) ) {
 				target.settings[ key ] = $input.attr( 'data-value' );
+			} else if ( $input.hasClass( 'spb-repeater' ) ) {
+				var repItems = [];
+				$input.find( '> .spb-repeater-items > .spb-repeater-item' ).each( function () {
+					var itemObj = {};
+					$( this ).find( '[data-subkey]' ).each( function () {
+						var subkey = $( this ).data( 'subkey' );
+						if ( 'checkbox' === this.type ) {
+							itemObj[ subkey ] = $( this ).is( ':checked' );
+						} else {
+							itemObj[ subkey ] = $( this ).val();
+						}
+					} );
+					repItems.push( itemObj );
+				} );
+				target.settings[ key ] = repItems;
 			} else if ( 'checkbox' === $input.attr( 'type' ) ) {
 				target.settings[ key ] = $input.is( ':checked' );
 			} else {
@@ -687,6 +783,47 @@
 		$panelOverlay.on( 'click', closeSettingsPanel );
 		$( document ).on( 'click', '.spb-panel-close', closeSettingsPanel );
 		$( document ).on( 'click', '.spb-panel-apply', applySettingsPanel );
+
+		/* -------- Champ "repeteur" (ex : questions/reponses de l'accordeon) -------- */
+
+		$( document ).on( 'click', '.spb-repeater-add', function ( e ) {
+			e.preventDefault();
+			var $repeater = $( this ).closest( '.spb-repeater' );
+			var key = $repeater.data( 'key' );
+			var itemFields = repeaterFieldDefs[ key ] || {};
+			var $items = $repeater.find( '.spb-repeater-items' );
+			var idx = $items.children( '.spb-repeater-item' ).length;
+			var $newItem = $( renderRepeaterItemHtml( itemFields, {}, idx ) );
+			$items.append( $newItem );
+			$newItem.find( '.spb-color-field' ).wpColorPicker();
+		} );
+
+		$( document ).on( 'click', '.spb-repeater-remove', function ( e ) {
+			e.preventDefault();
+			var $items = $( this ).closest( '.spb-repeater-items' );
+			$( this ).closest( '.spb-repeater-item' ).remove();
+			reindexRepeaterDisplay( $items );
+		} );
+
+		$( document ).on( 'click', '.spb-repeater-up', function ( e ) {
+			e.preventDefault();
+			var $item = $( this ).closest( '.spb-repeater-item' );
+			var $prev = $item.prev( '.spb-repeater-item' );
+			if ( $prev.length ) {
+				$item.insertBefore( $prev );
+			}
+			reindexRepeaterDisplay( $item.closest( '.spb-repeater-items' ) );
+		} );
+
+		$( document ).on( 'click', '.spb-repeater-down', function ( e ) {
+			e.preventDefault();
+			var $item = $( this ).closest( '.spb-repeater-item' );
+			var $next = $item.next( '.spb-repeater-item' );
+			if ( $next.length ) {
+				$item.insertAfter( $next );
+			}
+			reindexRepeaterDisplay( $item.closest( '.spb-repeater-items' ) );
+		} );
 
 		/* -------- Barre d'outils du champ "texte enrichi" -------- */
 

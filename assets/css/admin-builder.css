@@ -560,6 +560,76 @@
 	font-style: italic;
 }
 
+/* ----- Champ "repeteur" (questions/reponses de l'accordeon, etc.) ----- */
+
+.spb-repeater-items {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.spb-repeater-item {
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	background: #fafafa;
+}
+
+.spb-repeater-item-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 10px;
+	background: #f0f0f1;
+	border-bottom: 1px solid #dcdcde;
+	border-radius: 4px 4px 0 0;
+}
+
+.spb-repeater-item-title {
+	font-weight: 600;
+	font-size: 12px;
+	color: #50575e;
+}
+
+.spb-repeater-item-actions {
+	display: flex;
+	gap: 2px;
+}
+
+.spb-repeater-item-fields {
+	padding: 10px;
+}
+
+.spb-subfield {
+	margin-bottom: 10px;
+}
+
+.spb-subfield:last-child {
+	margin-bottom: 0;
+}
+
+.spb-subfield label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+	font-size: 12px;
+}
+
+.spb-subfield input[type="text"],
+.spb-subfield select,
+.spb-subfield textarea {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.spb-repeater-add {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	width: 100%;
+	justify-content: center;
+}
+
 .spb-image-field .spb-image-preview {
 	margin-bottom: 8px;
 	min-height: 40px;

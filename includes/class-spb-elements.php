@@ -32,10 +32,35 @@ class SPB_Elements {
 	 */
 	public static function get_row_fields() {
 		return array(
-			'bg_color'       => array(
+			'bg_color'        => array(
 				'type'    => 'color',
 				'label'   => __( 'Couleur de fond', 'simple-page-builder' ),
 				'default' => '',
+			),
+			'bg_image'        => array(
+				'type'    => 'image',
+				'label'   => __( 'Image de fond (optionnelle)', 'simple-page-builder' ),
+				'default' => 0,
+			),
+			'bg_overlay_color'   => array(
+				'type'    => 'color',
+				'label'   => __( 'Couleur du calque sur l\'image', 'simple-page-builder' ),
+				'default' => '#000000',
+			),
+			'bg_overlay_opacity' => array(
+				'type'    => 'number',
+				'label'   => __( 'Opacite du calque (0 a 100)', 'simple-page-builder' ),
+				'default' => 40,
+			),
+			'valign'          => array(
+				'type'    => 'select',
+				'label'   => __( 'Alignement vertical des colonnes', 'simple-page-builder' ),
+				'options' => array(
+					'top'    => __( 'Haut', 'simple-page-builder' ),
+					'center' => __( 'Centre', 'simple-page-builder' ),
+					'bottom' => __( 'Bas', 'simple-page-builder' ),
+				),
+				'default' => 'top',
 			),
 			'padding_top'    => array(
 				'type'    => 'number',
@@ -86,6 +111,9 @@ class SPB_Elements {
 			'dashicons-rss'                 => __( 'Flux RSS', 'simple-page-builder' ),
 			'dashicons-facebook'            => __( 'Facebook', 'simple-page-builder' ),
 			'dashicons-twitter'             => __( 'Twitter / X', 'simple-page-builder' ),
+			'dashicons-instagram'           => __( 'Instagram', 'simple-page-builder' ),
+			'dashicons-youtube'             => __( 'YouTube', 'simple-page-builder' ),
+			'dashicons-linkedin'            => __( 'LinkedIn', 'simple-page-builder' ),
 			'dashicons-calendar-alt'        => __( 'Calendrier', 'simple-page-builder' ),
 			'dashicons-clock'               => __( 'Horloge / horaires', 'simple-page-builder' ),
 			'dashicons-schedule'            => __( 'Planning', 'simple-page-builder' ),
@@ -198,6 +226,17 @@ class SPB_Elements {
 				'label'  => __( 'Titre', 'simple-page-builder' ),
 				'icon'   => 'dashicons-editor-textcolor',
 				'fields' => array(
+					'kicker'       => array(
+						'type'        => 'text',
+						'label'       => __( 'Surtitre (optionnel)', 'simple-page-builder' ),
+						'default'     => '',
+						'placeholder' => __( 'Ex. NOS SERVICES', 'simple-page-builder' ),
+					),
+					'kicker_color' => array(
+						'type'    => 'color',
+						'label'   => __( 'Couleur du surtitre', 'simple-page-builder' ),
+						'default' => '#DEA128',
+					),
 					'text'         => array(
 						'type'        => 'text',
 						'label'       => __( 'Texte du titre', 'simple-page-builder' ),
@@ -225,6 +264,11 @@ class SPB_Elements {
 						'type'    => 'color',
 						'label'   => __( 'Couleur du texte', 'simple-page-builder' ),
 						'default' => '',
+					),
+					'uppercase'    => array(
+						'type'    => 'checkbox',
+						'label'   => __( 'Afficher en MAJUSCULES', 'simple-page-builder' ),
+						'default' => false,
 					),
 					'shape'        => array(
 						'type'    => 'select',
@@ -303,6 +347,12 @@ class SPB_Elements {
 						'label'   => __( 'Texte alternatif', 'simple-page-builder' ),
 						'default' => '',
 					),
+					'caption'  => array(
+						'type'        => 'text',
+						'label'       => __( 'Legende (optionnelle)', 'simple-page-builder' ),
+						'default'     => '',
+						'placeholder' => __( 'Legende affichee sous la photo', 'simple-page-builder' ),
+					),
 					'align'    => array(
 						'type'    => 'select',
 						'label'   => __( 'Alignement', 'simple-page-builder' ),
@@ -320,6 +370,26 @@ class SPB_Elements {
 							'100'  => '100%',
 						),
 						'default' => 'auto',
+					),
+					'radius'   => array(
+						'type'    => 'select',
+						'label'   => __( 'Angles', 'simple-page-builder' ),
+						'options' => array(
+							'none'    => __( 'Droits', 'simple-page-builder' ),
+							'rounded' => __( 'Arrondis', 'simple-page-builder' ),
+							'circle'  => __( 'Ronds (image carree)', 'simple-page-builder' ),
+						),
+						'default' => 'none',
+					),
+					'shadow'   => array(
+						'type'    => 'checkbox',
+						'label'   => __( 'Ajouter une ombre portee', 'simple-page-builder' ),
+						'default' => false,
+					),
+					'lightbox' => array(
+						'type'    => 'checkbox',
+						'label'   => __( 'Agrandir en plein ecran au clic', 'simple-page-builder' ),
+						'default' => false,
 					),
 				),
 			),
@@ -498,12 +568,12 @@ class SPB_Elements {
 				'label'  => __( 'Video', 'simple-page-builder' ),
 				'icon'   => 'dashicons-video-alt3',
 				'fields' => array(
-					'url'   => array(
+					'url'     => array(
 						'type'    => 'url',
 						'label'   => __( 'URL YouTube / Vimeo / MP4', 'simple-page-builder' ),
 						'default' => '',
 					),
-					'ratio' => array(
+					'ratio'   => array(
 						'type'    => 'select',
 						'label'   => __( 'Format', 'simple-page-builder' ),
 						'options' => array(
@@ -511,6 +581,116 @@ class SPB_Elements {
 							'4-3'  => '4:3',
 						),
 						'default' => '16-9',
+					),
+					'caption' => array(
+						'type'        => 'text',
+						'label'       => __( 'Legende (optionnelle)', 'simple-page-builder' ),
+						'default'     => '',
+						'placeholder' => __( 'Legende affichee sous la video', 'simple-page-builder' ),
+					),
+				),
+			),
+
+			'accordion' => array(
+				'label'  => __( 'Accordeon (FAQ)', 'simple-page-builder' ),
+				'icon'   => 'dashicons-list-view',
+				'fields' => array(
+					'items'      => array(
+						'type'        => 'repeater',
+						'label'       => __( 'Questions / reponses', 'simple-page-builder' ),
+						'item_label'  => __( 'Question', 'simple-page-builder' ),
+						'item_fields' => array(
+							'question' => array(
+								'type'        => 'text',
+								'label'       => __( 'Question', 'simple-page-builder' ),
+								'default'     => '',
+								'placeholder' => __( 'Ex. Quels sont les horaires de la mairie ?', 'simple-page-builder' ),
+							),
+							'answer'   => array(
+								'type'        => 'textarea',
+								'label'       => __( 'Reponse', 'simple-page-builder' ),
+								'default'     => '',
+								'placeholder' => __( 'Votre reponse', 'simple-page-builder' ),
+							),
+						),
+						'default'     => array(
+							array(
+								'question' => '',
+								'answer'   => '',
+							),
+						),
+					),
+					'open_first' => array(
+						'type'    => 'checkbox',
+						'label'   => __( 'Ouvrir la premiere question par defaut', 'simple-page-builder' ),
+						'default' => true,
+					),
+				),
+			),
+
+			'social' => array(
+				'label'  => __( 'Reseaux sociaux', 'simple-page-builder' ),
+				'icon'   => 'dashicons-share',
+				'fields' => array(
+					'facebook'   => array(
+						'type'    => 'url',
+						'label'   => 'Facebook',
+						'default' => '',
+					),
+					'twitter'    => array(
+						'type'    => 'url',
+						'label'   => 'Twitter / X',
+						'default' => '',
+					),
+					'instagram'  => array(
+						'type'    => 'url',
+						'label'   => 'Instagram',
+						'default' => '',
+					),
+					'youtube'    => array(
+						'type'    => 'url',
+						'label'   => 'YouTube',
+						'default' => '',
+					),
+					'linkedin'   => array(
+						'type'    => 'url',
+						'label'   => 'LinkedIn',
+						'default' => '',
+					),
+					'rss'        => array(
+						'type'    => 'url',
+						'label'   => __( 'Flux RSS', 'simple-page-builder' ),
+						'default' => '',
+					),
+					'icon_color' => array(
+						'type'    => 'color',
+						'label'   => __( 'Couleur des icones', 'simple-page-builder' ),
+						'default' => '#2D6AB0',
+					),
+					'style'      => array(
+						'type'    => 'select',
+						'label'   => __( 'Style', 'simple-page-builder' ),
+						'options' => array(
+							'plain'  => __( 'Icones simples', 'simple-page-builder' ),
+							'circle' => __( 'Icones dans des ronds colores', 'simple-page-builder' ),
+						),
+						'default' => 'plain',
+					),
+					'size'       => array(
+						'type'    => 'select',
+						'label'   => __( 'Taille', 'simple-page-builder' ),
+						'options' => array(
+							'small'  => __( 'Petite', 'simple-page-builder' ),
+							'medium' => __( 'Moyenne', 'simple-page-builder' ),
+							'large'  => __( 'Grande', 'simple-page-builder' ),
+						),
+						'default' => 'medium',
+					),
+					'align'      => array(
+						'type'    => 'select',
+						'label'   => __( 'Alignement', 'simple-page-builder' ),
+						'options' => $align_lcr,
+						'default' => 'left',
 					),
 				),
 			),
@@ -550,6 +730,34 @@ class SPB_Elements {
 						'label'   => __( 'Texte', 'simple-page-builder' ),
 						'default' => '',
 					),
+					'layout'     => array(
+						'type'    => 'select',
+						'label'   => __( 'Disposition', 'simple-page-builder' ),
+						'options' => array(
+							'top'  => __( 'Icone au-dessus', 'simple-page-builder' ),
+							'left' => __( 'Icone a cote (en ligne)', 'simple-page-builder' ),
+						),
+						'default' => 'top',
+					),
+					'style'      => array(
+						'type'    => 'select',
+						'label'   => __( 'Style du bloc', 'simple-page-builder' ),
+						'options' => array(
+							'plain' => __( 'Simple (sans fond)', 'simple-page-builder' ),
+							'card'  => __( 'Carte (fond + bordure)', 'simple-page-builder' ),
+						),
+						'default' => 'plain',
+					),
+					'bg_color'   => array(
+						'type'    => 'color',
+						'label'   => __( 'Couleur de fond (si style Carte)', 'simple-page-builder' ),
+						'default' => '#f6f7f7',
+					),
+					'link'       => array(
+						'type'    => 'url',
+						'label'   => __( 'Rendre le bloc cliquable (lien, optionnel)', 'simple-page-builder' ),
+						'default' => '',
+					),
 					'align'      => array(
 						'type'    => 'select',
 						'label'   => __( 'Alignement', 'simple-page-builder' ),
@@ -566,15 +774,29 @@ class SPB_Elements {
 				'label'  => __( 'Citation', 'simple-page-builder' ),
 				'icon'   => 'dashicons-format-quote',
 				'fields' => array(
-					'text'   => array(
+					'text'      => array(
 						'type'    => 'textarea',
 						'label'   => __( 'Texte de la citation', 'simple-page-builder' ),
 						'default' => '',
 					),
-					'author' => array(
+					'author'    => array(
 						'type'    => 'text',
 						'label'   => __( 'Auteur', 'simple-page-builder' ),
 						'default' => '',
+					),
+					'style'     => array(
+						'type'    => 'select',
+						'label'   => __( 'Style', 'simple-page-builder' ),
+						'options' => array(
+							'simple' => __( 'Simple (filet colore)', 'simple-page-builder' ),
+							'card'   => __( 'Carte (fond + grand guillemet)', 'simple-page-builder' ),
+						),
+						'default' => 'simple',
+					),
+					'show_icon' => array(
+						'type'    => 'checkbox',
+						'label'   => __( 'Afficher un grand guillemet decoratif', 'simple-page-builder' ),
+						'default' => true,
 					),
 				),
 			),

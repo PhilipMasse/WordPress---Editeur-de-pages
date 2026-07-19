@@ -98,6 +98,7 @@ class SPB_Metabox {
 					'emptyColumn'   => __( 'Colonne vide', 'simple-page-builder' ),
 					'chooseImage'   => __( 'Choisir une image', 'simple-page-builder' ),
 					'linkUrl'       => __( 'URL du lien :', 'simple-page-builder' ),
+					'addItem'       => __( 'Ajouter une question', 'simple-page-builder' ),
 				),
 			)
 		);

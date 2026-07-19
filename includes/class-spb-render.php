@@ -163,6 +163,10 @@ class SPB_Render {
 					$clean[ $key ] = self::sanitize_icon( $raw_value, $def['default'] );
 					break;
 
+				case 'repeater':
+					$clean[ $key ] = self::sanitize_repeater( $raw_value, isset( $def['item_fields'] ) ? $def['item_fields'] : array() );
+					break;
+
 				case 'select':
 					$options = isset( $def['options'] ) ? array_map( 'strval', array_keys( $def['options'] ) ) : array();
 					$raw_str = (string) $raw_value;
@@ -210,6 +214,26 @@ class SPB_Render {
 			return $icon;
 		}
 		return $default;
+	}
+
+	/**
+	 * Sanitise un champ "repeteur" (ex : questions/reponses d'un accordeon) :
+	 * chaque element du tableau est nettoye selon les memes regles que les
+	 * champs normaux (reutilise sanitize_fields recursivement).
+	 */
+	private static function sanitize_repeater( $raw_value, $item_fields ) {
+		$clean_items = array();
+
+		if ( is_array( $raw_value ) && ! empty( $item_fields ) ) {
+			foreach ( $raw_value as $item ) {
+				if ( ! is_array( $item ) ) {
+					continue;
+				}
+				$clean_items[] = self::sanitize_fields( $item, $item_fields );
+			}
+		}
+
+		return $clean_items;
 	}
 
 	/**
@@ -300,10 +324,21 @@ class SPB_Render {
 		if ( ! empty( $settings['bg_color'] ) ) {
 			$style .= 'background-color:' . esc_attr( $settings['bg_color'] ) . ';';
 		}
+
+		$bg_image_id = isset( $settings['bg_image'] ) ? intval( $settings['bg_image'] ) : 0;
+		if ( $bg_image_id > 0 ) {
+			$bg_url = wp_get_attachment_image_url( $bg_image_id, 'full' );
+			if ( $bg_url ) {
+				$style .= 'background-image:url(' . esc_url( $bg_url ) . ');background-size:cover;background-position:center;position:relative;';
+			}
+		}
+
 		$style .= 'padding-top:' . intval( isset( $settings['padding_top'] ) ? $settings['padding_top'] : 40 ) . 'px;';
 		$style .= 'padding-bottom:' . intval( isset( $settings['padding_bottom'] ) ? $settings['padding_bottom'] : 40 ) . 'px;';
 
-		$classes = array( 'spb-row' );
+		$valign = in_array( isset( $settings['valign'] ) ? $settings['valign'] : 'top', array( 'top', 'center', 'bottom' ), true ) ? $settings['valign'] : 'top';
+
+		$classes = array( 'spb-row', 'spb-row-valign-' . $valign );
 		if ( ! empty( $settings['full_width'] ) ) {
 			$classes[] = 'spb-row-full';
 		}
@@ -311,7 +346,15 @@ class SPB_Render {
 			$classes[] = sanitize_html_class( $settings['custom_class'] );
 		}
 
-		$out  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '">';
+		$out = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '">';
+
+		// Calque colore semi-transparent, uniquement si une image de fond est definie.
+		if ( $bg_image_id > 0 && isset( $settings['bg_overlay_opacity'] ) && intval( $settings['bg_overlay_opacity'] ) > 0 ) {
+			$overlay_color = ! empty( $settings['bg_overlay_color'] ) ? $settings['bg_overlay_color'] : '#000000';
+			$opacity = max( 0, min( 100, intval( $settings['bg_overlay_opacity'] ) ) ) / 100;
+			$out .= '<div class="spb-row-overlay" style="position:absolute;inset:0;background-color:' . esc_attr( $overlay_color ) . ';opacity:' . esc_attr( $opacity ) . ';"></div>';
+		}
+
 		$out .= '<div class="spb-row-inner">';
 
 		$columns = isset( $row['columns'] ) && is_array( $row['columns'] ) ? $row['columns'] : array();
@@ -361,21 +404,7 @@ class SPB_Render {
 				if ( empty( $s['image_id'] ) ) {
 					return '';
 				}
-				$img = wp_get_attachment_image(
-					$s['image_id'],
-					'large',
-					false,
-					array( 'alt' => esc_attr( $s['alt'] ) )
-				);
-				if ( ! $img ) {
-					return '';
-				}
-				$width_style = '' !== $s['width'] && 'auto' !== $s['width'] ? ' style="width:' . intval( $s['width'] ) . '%;"' : '';
-				$img = '<span class="spb-image-wrap"' . $width_style . '>' . $img . '</span>';
-				if ( ! empty( $s['link'] ) ) {
-					$img = '<a href="' . esc_url( $s['link'] ) . '">' . $img . '</a>';
-				}
-				return '<div class="spb-el spb-image spb-align-' . esc_attr( $s['align'] ) . '">' . $img . '</div>';
+				return self::render_image( $s );
 
 			case 'button':
 				return self::render_button( $s );
@@ -390,26 +419,22 @@ class SPB_Render {
 				if ( empty( $s['url'] ) ) {
 					return '';
 				}
-				$ratio_class = '4-3' === $s['ratio'] ? 'spb-ratio-4-3' : 'spb-ratio-16-9';
-				$embed = wp_oembed_get( esc_url_raw( $s['url'] ) );
-				if ( ! $embed ) {
-					$embed = '<a href="' . esc_url( $s['url'] ) . '">' . esc_html( $s['url'] ) . '</a>';
-				}
-				return '<div class="spb-el spb-video ' . esc_attr( $ratio_class ) . '">' . $embed . '</div>';
+				return self::render_video( $s );
 
 			case 'icon_box':
 				return self::render_icon_box( $s );
 
 			case 'quote':
-				$out = '<blockquote class="spb-el spb-quote">' . esc_html( $s['text'] );
-				if ( ! empty( $s['author'] ) ) {
-					$out .= '<cite>' . esc_html( $s['author'] ) . '</cite>';
-				}
-				$out .= '</blockquote>';
-				return $out;
+				return self::render_quote( $s );
 
 			case 'list':
 				return self::render_list( $s );
+
+			case 'accordion':
+				return self::render_accordion( $s );
+
+			case 'social':
+				return self::render_social( $s );
 
 			default:
 				return '';
@@ -424,6 +449,15 @@ class SPB_Render {
 		$text_style = '';
 		if ( ! empty( $s['color'] ) ) {
 			$text_style .= 'color:' . esc_attr( $s['color'] ) . ';';
+		}
+		if ( ! empty( $s['uppercase'] ) ) {
+			$text_style .= 'text-transform:uppercase;';
+		}
+
+		$kicker_html = '';
+		if ( ! empty( $s['kicker'] ) ) {
+			$kicker_color = ! empty( $s['kicker_color'] ) ? $s['kicker_color'] : '#DEA128';
+			$kicker_html = '<span class="spb-heading-kicker" style="color:' . esc_attr( $kicker_color ) . ';">' . esc_html( $s['kicker'] ) . '</span>';
 		}
 
 		$icon_html = '';
@@ -450,7 +484,7 @@ class SPB_Render {
 			$heading_tag = '<div class="spb-heading-box" style="background-color:' . esc_attr( $shape_color ) . ';">' . $heading_tag . '</div>';
 		}
 
-		$out = '<div class="spb-el spb-heading-wrap spb-shape-' . esc_attr( $shape ) . ' spb-align-' . esc_attr( $s['align'] ) . '">' . $heading_tag;
+		$out = '<div class="spb-el spb-heading-wrap spb-shape-' . esc_attr( $shape ) . ' spb-align-' . esc_attr( $s['align'] ) . '">' . $kicker_html . $heading_tag;
 
 		if ( 'underline' === $shape ) {
 			$out .= '<span class="spb-heading-underline" style="background-color:' . esc_attr( $shape_color ) . ';"></span>';
@@ -532,20 +566,177 @@ class SPB_Render {
 		return '<div class="spb-el spb-separator" style="' . esc_attr( $style ) . '"></div>';
 	}
 
+	private static function render_image( $s ) {
+		$img = wp_get_attachment_image(
+			$s['image_id'],
+			'large',
+			false,
+			array( 'alt' => esc_attr( $s['alt'] ) )
+		);
+		if ( ! $img ) {
+			return '';
+		}
+
+		$radius_class = 'spb-image-radius-' . ( in_array( $s['radius'], array( 'none', 'rounded', 'circle' ), true ) ? $s['radius'] : 'none' );
+		$shadow_class = ! empty( $s['shadow'] ) ? ' spb-image-shadow' : '';
+		$width_style = '' !== $s['width'] && 'auto' !== $s['width'] ? ' style="width:' . intval( $s['width'] ) . '%;"' : '';
+
+		$img = '<span class="spb-image-wrap ' . esc_attr( $radius_class . $shadow_class ) . '"' . $width_style . '>' . $img . '</span>';
+
+		if ( ! empty( $s['lightbox'] ) ) {
+			$full_url = wp_get_attachment_image_url( $s['image_id'], 'full' );
+			$anchor_id = 'spb-lb-' . intval( $s['image_id'] ) . '-' . substr( md5( wp_json_encode( $s ) ), 0, 6 );
+			$img = '<a class="spb-lightbox-trigger" href="#' . esc_attr( $anchor_id ) . '">' . $img . '</a>';
+			$img .= '<div class="spb-lightbox-overlay" id="' . esc_attr( $anchor_id ) . '">';
+			$img .= '<a href="#" class="spb-lightbox-close">&times;</a>';
+			if ( $full_url ) {
+				$img .= '<img src="' . esc_url( $full_url ) . '" alt="' . esc_attr( $s['alt'] ) . '" />';
+			}
+			$img .= '</div>';
+		} elseif ( ! empty( $s['link'] ) ) {
+			$img = '<a href="' . esc_url( $s['link'] ) . '">' . $img . '</a>';
+		}
+
+		$out = '<div class="spb-el spb-image spb-align-' . esc_attr( $s['align'] ) . '">' . $img;
+
+		if ( ! empty( $s['caption'] ) ) {
+			$out .= '<span class="spb-image-caption">' . esc_html( $s['caption'] ) . '</span>';
+		}
+
+		$out .= '</div>';
+
+		return $out;
+	}
+
+	private static function render_video( $s ) {
+		$ratio_class = '4-3' === $s['ratio'] ? 'spb-ratio-4-3' : 'spb-ratio-16-9';
+		$embed = wp_oembed_get( esc_url_raw( $s['url'] ) );
+		if ( ! $embed ) {
+			$embed = '<a href="' . esc_url( $s['url'] ) . '">' . esc_html( $s['url'] ) . '</a>';
+		}
+
+		$out = '<div class="spb-el spb-video-wrap"><div class="spb-video ' . esc_attr( $ratio_class ) . '">' . $embed . '</div>';
+
+		if ( ! empty( $s['caption'] ) ) {
+			$out .= '<span class="spb-video-caption">' . esc_html( $s['caption'] ) . '</span>';
+		}
+
+		$out .= '</div>';
+
+		return $out;
+	}
+
 	private static function render_icon_box( $s ) {
 		$icon_class = self::sanitize_icon( $s['icon'], 'dashicons-info' );
 		$icon_color = ! empty( $s['icon_color'] ) ? $s['icon_color'] : '#2D6AB0';
 		$size_class = 'spb-icon-size-' . ( in_array( $s['icon_size'], array( 'small', 'medium', 'large' ), true ) ? $s['icon_size'] : 'medium' );
+		$layout_class = 'spb-icon-box-' . ( 'left' === $s['layout'] ? 'left' : 'top' );
+		$style_class = 'card' === $s['style'] ? ' spb-icon-box-card' : '';
 
-		return sprintf(
-			'<div class="spb-el spb-icon-box spb-align-%1$s"><span class="spb-icon dashicons %2$s %3$s" style="color:%4$s;"></span><h4>%5$s</h4><p>%6$s</p></div>',
-			esc_attr( $s['align'] ),
+		$box_style = '';
+		if ( 'card' === $s['style'] && ! empty( $s['bg_color'] ) ) {
+			$box_style = ' style="background-color:' . esc_attr( $s['bg_color'] ) . ';"';
+		}
+
+		$inner = sprintf(
+			'<span class="spb-icon dashicons %1$s %2$s" style="color:%3$s;"></span><div class="spb-icon-box-text"><h4>%4$s</h4><p>%5$s</p></div>',
 			esc_attr( $icon_class ),
 			esc_attr( $size_class ),
 			esc_attr( $icon_color ),
 			esc_html( $s['title'] ),
 			esc_html( $s['text'] )
 		);
+
+		$tag = ! empty( $s['link'] ) ? 'a' : 'div';
+		$href_attr = ! empty( $s['link'] ) ? ' href="' . esc_url( $s['link'] ) . '"' : '';
+
+		return sprintf(
+			'<%1$s class="spb-el spb-icon-box %2$s %3$s spb-align-%4$s"%5$s%6$s>%7$s</%1$s>',
+			$tag,
+			esc_attr( $layout_class ),
+			esc_attr( $style_class ),
+			esc_attr( $s['align'] ),
+			$href_attr,
+			$box_style,
+			$inner
+		);
+	}
+
+	private static function render_quote( $s ) {
+		$style = 'card' === $s['style'] ? 'card' : 'simple';
+		$icon_html = ! empty( $s['show_icon'] ) ? '<span class="spb-quote-mark dashicons dashicons-format-quote"></span>' : '';
+
+		$out = '<blockquote class="spb-el spb-quote spb-quote-' . esc_attr( $style ) . '">';
+		$out .= $icon_html;
+		$out .= '<span class="spb-quote-text">' . esc_html( $s['text'] ) . '</span>';
+		if ( ! empty( $s['author'] ) ) {
+			$out .= '<cite>' . esc_html( $s['author'] ) . '</cite>';
+		}
+		$out .= '</blockquote>';
+
+		return $out;
+	}
+
+	private static function render_accordion( $s ) {
+		$items = isset( $s['items'] ) && is_array( $s['items'] ) ? $s['items'] : array();
+
+		if ( empty( $items ) ) {
+			return '';
+		}
+
+		$out = '<div class="spb-el spb-accordion">';
+
+		foreach ( $items as $index => $item ) {
+			$question = isset( $item['question'] ) ? trim( $item['question'] ) : '';
+			$answer = isset( $item['answer'] ) ? $item['answer'] : '';
+
+			if ( '' === $question ) {
+				continue;
+			}
+
+			$open_attr = ( 0 === $index && ! empty( $s['open_first'] ) ) ? ' open' : '';
+
+			$out .= '<details class="spb-accordion-item"' . $open_attr . '>';
+			$out .= '<summary class="spb-accordion-question">' . esc_html( $question ) . '</summary>';
+			$out .= '<div class="spb-accordion-answer">' . wpautop( esc_html( $answer ) ) . '</div>';
+			$out .= '</details>';
+		}
+
+		$out .= '</div>';
+
+		return $out;
+	}
+
+	private static function render_social( $s ) {
+		$platforms = array(
+			'facebook'  => 'dashicons-facebook',
+			'twitter'   => 'dashicons-twitter',
+			'instagram' => 'dashicons-instagram',
+			'youtube'   => 'dashicons-youtube',
+			'linkedin'  => 'dashicons-linkedin',
+			'rss'       => 'dashicons-rss',
+		);
+
+		$size_class = 'spb-social-size-' . ( in_array( $s['size'], array( 'small', 'medium', 'large' ), true ) ? $s['size'] : 'medium' );
+		$style_class = 'circle' === $s['style'] ? ' spb-social-circle' : '';
+		$icon_color = ! empty( $s['icon_color'] ) ? $s['icon_color'] : '#2D6AB0';
+
+		$links = '';
+		foreach ( $platforms as $key => $icon_class ) {
+			if ( empty( $s[ $key ] ) ) {
+				continue;
+			}
+			$link_style = 'circle' === $s['style']
+				? 'background-color:' . esc_attr( $icon_color ) . ';'
+				: 'color:' . esc_attr( $icon_color ) . ';';
+			$links .= '<a class="spb-social-link" href="' . esc_url( $s[ $key ] ) . '" target="_blank" rel="noopener noreferrer" style="' . $link_style . '"><span class="dashicons ' . esc_attr( $icon_class ) . '"></span></a>';
+		}
+
+		if ( '' === $links ) {
+			return '';
+		}
+
+		return '<div class="spb-el spb-social ' . esc_attr( $size_class . $style_class ) . ' spb-align-' . esc_attr( $s['align'] ) . '">' . $links . '</div>';
 	}
 
 	private static function render_list( $s ) {

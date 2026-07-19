@@ -3,10 +3,27 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.4.0 : plus d'options dans chaque bloc ==
+
+* Ligne : image de fond avec calque colore reglable, alignement vertical
+  des colonnes (haut / centre / bas).
+* Titre : surtitre (kicker) au-dessus du titre, option MAJUSCULES.
+* Image : angles arrondis ou ronds, ombre portee, legende, agrandissement
+  en plein ecran au clic (sans dependance externe).
+* Bloc icone : disposition icone au-dessus / icone a cote, style "carte"
+  avec fond et bordure, bloc entierement cliquable (lien optionnel).
+* Citation : style "carte" avec grand guillemet decoratif.
+* Video : legende optionnelle.
+* DEUX NOUVEAUX BLOCS :
+  - Accordeon (FAQ) : liste de questions/reponses depliables, ideal pour
+    les horaires, demarches administratives, questions frequentes.
+  - Reseaux sociaux : icones Facebook / Twitter / Instagram / YouTube /
+    LinkedIn / RSS, avec style simple ou pastilles colorees.
 
 == Nouveautes 1.3.0 ==
 

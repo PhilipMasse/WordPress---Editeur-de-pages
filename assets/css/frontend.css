@@ -357,3 +357,278 @@
 	color: var(--spb-list-marker-color);
 	font-weight: bold;
 }
+
+/* ----- Ligne : image de fond + calque + alignement vertical ----- */
+
+.spb-row {
+	position: relative;
+}
+
+.spb-row-overlay {
+	pointer-events: none;
+}
+
+.spb-row-inner {
+	position: relative;
+	z-index: 1;
+}
+
+.spb-row-valign-center .spb-row-inner {
+	align-items: center;
+}
+
+.spb-row-valign-bottom .spb-row-inner {
+	align-items: flex-end;
+}
+
+/* ----- Titre : surtitre (kicker) ----- */
+
+.spb-heading-kicker {
+	display: block;
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+/* ----- Image : legende + ombre + lightbox CSS pur ----- */
+
+.spb-image-radius-rounded img {
+	border-radius: 10px;
+}
+
+.spb-image-radius-circle img {
+	border-radius: 50%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+}
+
+.spb-image-shadow img {
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.spb-image-caption {
+	display: block;
+	font-size: 0.85em;
+	color: #666;
+	margin-top: 8px;
+	font-style: italic;
+}
+
+.spb-lightbox-trigger {
+	cursor: zoom-in;
+}
+
+.spb-lightbox-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s ease;
+	z-index: 100000;
+	padding: 30px;
+	box-sizing: border-box;
+}
+
+.spb-lightbox-overlay:target {
+	opacity: 1;
+	visibility: visible;
+}
+
+.spb-lightbox-overlay img {
+	max-width: 100%;
+	max-height: 90vh;
+	border-radius: 4px;
+}
+
+.spb-lightbox-close {
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	color: #fff;
+	font-size: 40px;
+	line-height: 1;
+	text-decoration: none;
+}
+
+/* ----- Video : legende ----- */
+
+.spb-video-caption {
+	display: block;
+	font-size: 0.85em;
+	color: #666;
+	margin-top: 8px;
+	font-style: italic;
+}
+
+/* ----- Bloc icone : disposition, style carte, lien ----- */
+
+.spb-icon-box {
+	padding: 10px 0;
+	text-decoration: none;
+	display: block;
+	color: inherit;
+}
+
+.spb-icon-box-card {
+	padding: 24px;
+	border-radius: 8px;
+	border: 1px solid #e2e4e7;
+}
+
+.spb-icon-box-left {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+	text-align: left;
+}
+
+.spb-icon-box-left .spb-icon {
+	margin-bottom: 0;
+	flex-shrink: 0;
+}
+
+.spb-icon-box-text h4 {
+	margin: 0 0 6px;
+}
+
+.spb-icon-box-text p {
+	margin: 0;
+	color: #4b5157;
+}
+
+a.spb-icon-box:hover .spb-icon-box-text h4 {
+	text-decoration: underline;
+}
+
+/* ----- Citation : style carte + icone ----- */
+
+.spb-quote-card {
+	background: #f6f7f7;
+	border-left: none;
+	padding: 30px;
+	border-radius: 8px;
+}
+
+.spb-quote-mark {
+	display: block;
+	font-size: 40px;
+	width: 40px;
+	height: 40px;
+	color: var(--spb-gold);
+	margin-bottom: 10px;
+}
+
+.spb-quote-text {
+	display: block;
+}
+
+/* ----- Accordeon (FAQ) ----- */
+
+.spb-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.spb-accordion-item {
+	border: 1px solid #e2e4e7;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.spb-accordion-question {
+	padding: 16px 20px;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+	background: #f6f7f7;
+	position: relative;
+	padding-right: 40px;
+}
+
+.spb-accordion-question::-webkit-details-marker {
+	display: none;
+}
+
+.spb-accordion-question::after {
+	content: "+";
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.3em;
+	color: var(--spb-blue);
+}
+
+.spb-accordion-item[open] .spb-accordion-question::after {
+	content: "\2212";
+}
+
+.spb-accordion-answer {
+	padding: 4px 20px 18px;
+	color: #4b5157;
+	line-height: 1.7;
+}
+
+.spb-accordion-answer p:first-child {
+	margin-top: 0;
+}
+
+/* ----- Reseaux sociaux ----- */
+
+.spb-social {
+	display: flex;
+	gap: 12px;
+}
+
+.spb-social.spb-align-center {
+	justify-content: center;
+}
+
+.spb-social.spb-align-right {
+	justify-content: flex-end;
+}
+
+.spb-social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+}
+
+.spb-social-size-small .spb-social-link .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.spb-social-size-medium .spb-social-link .dashicons {
+	font-size: 28px;
+	width: 28px;
+	height: 28px;
+}
+
+.spb-social-size-large .spb-social-link .dashicons {
+	font-size: 38px;
+	width: 38px;
+	height: 38px;
+}
+
+.spb-social-circle .spb-social-link {
+	border-radius: 50%;
+	width: 2.2em;
+	height: 2.2em;
+}
+
+.spb-social-circle .spb-social-link .dashicons {
+	color: #fff;
+	font-size: 1.1em;
+	width: 1.1em;
+	height: 1.1em;
+}
