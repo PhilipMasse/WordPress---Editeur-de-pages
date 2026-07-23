@@ -157,6 +157,18 @@
 	text-decoration: none !important;
 }
 
+/* Repetition volontaire de la classe : augmente la specificite CSS pour
+   l'emporter meme face a une regle plus specifique du theme (ex.
+   ".entry-content a { text-decoration: underline !important; }"), les
+   deux etant "!important", c'est la plus specifique qui l'emporte. */
+.spb-button.spb-button.spb-button,
+.spb-button.spb-button.spb-button:hover,
+.spb-button.spb-button.spb-button:focus,
+.spb-button.spb-button.spb-button:active,
+.spb-button.spb-button.spb-button:visited {
+	text-decoration: none !important;
+}
+
 .spb-button:hover {
 	opacity: 0.85;
 }
@@ -218,6 +230,12 @@
 	background: var(--spb-blue);
 	color: #fff !important;
 }
+
+/* Meme renforcement de specificite que pour text-decoration ci-dessus. */
+.spb-button.spb-button-primary.spb-button-primary { color: #fff !important; }
+.spb-button.spb-button-secondary.spb-button-secondary { color: #fff !important; }
+.spb-button.spb-button-outline.spb-button-outline { color: var(--spb-blue) !important; }
+.spb-button.spb-button-custom.spb-button-custom { color: #fff !important; }
 
 .spb-button-icon {
 	font-size: 1.1em;

@@ -3,10 +3,18 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.4.6 ==
+
+* Correction (bloc Bouton) : le "!important" seul ne suffisait pas face
+  a une regle du theme plus specifique (entre deux regles !important,
+  c'est la plus specifique qui l'emporte, pas la plus recente). La
+  specificite CSS des regles du bouton (texte souligne, couleurs de
+  style) est desormais renforcee pour l'emporter dans tous les cas.
 
 == Nouveautes 1.4.5 ==
 
