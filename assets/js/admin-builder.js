@@ -874,15 +874,41 @@
 			}
 		} );
 
+		// Le clic sur un selecteur de couleur natif (<input type="color">) fait
+		// perdre la selection de texte en cours dans la zone editable (le focus
+		// passe au selecteur de couleur du systeme). On la sauvegarde donc juste
+		// avant, pour pouvoir la restaurer au moment d'appliquer la couleur.
+		var savedRichtextRange = null;
+
+		$( document ).on( 'mousedown', '.spb-rt-forecolor, .spb-rt-backcolor', function () {
+			var $area = $( this ).closest( '.spb-field' ).find( '.spb-richtext-area' );
+			var sel = window.getSelection();
+			if ( sel.rangeCount > 0 && $area.length ) {
+				var range = sel.getRangeAt( 0 );
+				if ( $area[ 0 ].contains( range.commonAncestorContainer ) ) {
+					savedRichtextRange = range.cloneRange();
+				}
+			}
+		} );
+
+		function restoreRichtextSelection( $area ) {
+			$area.trigger( 'focus' );
+			if ( savedRichtextRange ) {
+				var sel = window.getSelection();
+				sel.removeAllRanges();
+				sel.addRange( savedRichtextRange );
+			}
+		}
+
 		$( document ).on( 'input', '.spb-rt-forecolor', function () {
 			var $area = $( this ).closest( '.spb-field' ).find( '.spb-richtext-area' );
-			$area.trigger( 'focus' );
+			restoreRichtextSelection( $area );
 			document.execCommand( 'foreColor', false, $( this ).val() );
 		} );
 
 		$( document ).on( 'input', '.spb-rt-backcolor', function () {
 			var $area = $( this ).closest( '.spb-field' ).find( '.spb-richtext-area' );
-			$area.trigger( 'focus' );
+			restoreRichtextSelection( $area );
 			try {
 				document.execCommand( 'hiliteColor', false, $( this ).val() );
 			} catch ( err ) {

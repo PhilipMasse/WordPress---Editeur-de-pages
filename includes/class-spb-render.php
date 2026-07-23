@@ -272,6 +272,7 @@ class SPB_Render {
 			),
 			'span'       => array( 'style' => true ),
 			'div'        => array( 'style' => true ),
+			'font'       => array( 'color' => true ),
 		);
 
 		$html = wp_kses( $html, $allowed );
@@ -507,14 +508,15 @@ class SPB_Render {
 			$classes[] = 'spb-button-full';
 		}
 
+		// Les couleurs personnalisees s'appliquent des qu'elles sont renseignees,
+		// quel que soit le style choisi (elles viennent alors remplacer les
+		// couleurs du style pour ce bouton precis).
 		$style_attr = '';
-		if ( 'custom' === $style_key ) {
-			if ( ! empty( $s['bg_color'] ) ) {
-				$style_attr .= 'background-color:' . esc_attr( $s['bg_color'] ) . ';border-color:' . esc_attr( $s['bg_color'] ) . ';';
-			}
-			if ( ! empty( $s['text_color'] ) ) {
-				$style_attr .= 'color:' . esc_attr( $s['text_color'] ) . ';';
-			}
+		if ( ! empty( $s['bg_color'] ) ) {
+			$style_attr .= 'background-color:' . esc_attr( $s['bg_color'] ) . ';border-color:' . esc_attr( $s['bg_color'] ) . ';';
+		}
+		if ( ! empty( $s['text_color'] ) ) {
+			$style_attr .= 'color:' . esc_attr( $s['text_color'] ) . ';';
 		}
 
 		// Determine le lien final : page interne (permalien recalcule a chaque affichage) ou URL externe saisie.

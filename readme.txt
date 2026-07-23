@@ -3,10 +3,21 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.4.3 ==
+
+* Correction (bloc Texte) : les couleurs de texte et de surlignage de la
+  barre d'outils ne s'appliquaient pas -- le clic sur le selecteur de
+  couleur faisait perdre la selection de texte en cours avant que la
+  couleur ne soit appliquee. La selection est desormais preservee.
+* Correction/amelioration (bloc Bouton) : les couleurs personnalisees
+  (fond / texte) s'appliquent maintenant des qu'elles sont renseignees,
+  quel que soit le style choisi (Plein, Contour...), au lieu de
+  necessiter de choisir precisement le style "Personnalise".
 
 == Nouveautes 1.4.2 ==
 

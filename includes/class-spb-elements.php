@@ -442,12 +442,12 @@ class SPB_Elements {
 					),
 					'bg_color'      => array(
 						'type'    => 'color',
-						'label'   => __( 'Couleur de fond (si style personnalise)', 'simple-page-builder' ),
+						'label'   => __( 'Couleur de fond personnalisee (optionnel, remplace la couleur du style)', 'simple-page-builder' ),
 						'default' => '',
 					),
 					'text_color'    => array(
 						'type'    => 'color',
-						'label'   => __( 'Couleur du texte (si style personnalise)', 'simple-page-builder' ),
+						'label'   => __( 'Couleur du texte personnalisee (optionnel, remplace la couleur du style)', 'simple-page-builder' ),
 						'default' => '',
 					),
 					'size'          => array(
