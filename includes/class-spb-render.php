@@ -516,7 +516,10 @@ class SPB_Render {
 			$style_attr .= 'background-color:' . esc_attr( $s['bg_color'] ) . ';border-color:' . esc_attr( $s['bg_color'] ) . ';';
 		}
 		if ( ! empty( $s['text_color'] ) ) {
-			$style_attr .= 'color:' . esc_attr( $s['text_color'] ) . ';';
+			// !important necessaire pour passer au-dessus d'eventuelles regles
+			// globales du theme qui forcent la couleur des liens (ex. "a { color: ... !important; }"),
+			// puisque ce bouton est techniquement un element <a>.
+			$style_attr .= 'color:' . esc_attr( $s['text_color'] ) . ' !important;';
 		}
 
 		// Determine le lien final : page interne (permalien recalcule a chaque affichage) ou URL externe saisie.

@@ -190,26 +190,27 @@
 	border-radius: 999px;
 }
 
-/* Couleurs */
+/* Couleurs (!important : un theme applique parfois "a { color: ... !important; }"
+   a tous les liens, y compris ces boutons qui sont techniquement des <a>) */
 .spb-button-primary {
 	background: var(--spb-blue);
-	color: #fff;
+	color: #fff !important;
 }
 
 .spb-button-secondary {
 	background: var(--spb-green);
-	color: #fff;
+	color: #fff !important;
 }
 
 .spb-button-outline {
 	background: transparent;
 	border-color: var(--spb-blue);
-	color: var(--spb-blue);
+	color: var(--spb-blue) !important;
 }
 
 .spb-button-custom {
 	background: var(--spb-blue);
-	color: #fff;
+	color: #fff !important;
 }
 
 .spb-button-icon {

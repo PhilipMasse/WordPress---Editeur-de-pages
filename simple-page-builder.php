@@ -3,7 +3,7 @@
  * Plugin Name: Simple Page Builder
  * Plugin URI: https://berrelesalpes.fr
  * Description: Editeur de page visuel par glisser-deposer (lignes / colonnes / elements), simple d'utilisation, dans l'esprit de WPBakery Page Builder.
- * Version: 1.4.3
+ * Version: 1.4.4
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Mairie de Berre-les-Alpes
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Acces direct interdit.
 }
 
-define( 'SPB_VERSION', '1.4.3' );
+define( 'SPB_VERSION', '1.4.4' );
 define( 'SPB_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SPB_URL', plugin_dir_url( __FILE__ ) );
 
