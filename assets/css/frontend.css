@@ -144,11 +144,17 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	text-decoration: none;
+	text-decoration: none !important;
 	font-weight: 600;
 	transition: opacity 0.15s ease, transform 0.1s ease;
 	border: 2px solid transparent;
 	box-sizing: border-box;
+}
+
+.spb-button:hover,
+.spb-button:focus,
+.spb-button:active {
+	text-decoration: none !important;
 }
 
 .spb-button:hover {
