@@ -172,6 +172,8 @@
 				var platforms = [ 'facebook', 'twitter', 'instagram', 'youtube', 'linkedin', 'rss' ];
 				var pCount = platforms.filter( function ( p ) { return s[ p ]; } ).length;
 				return pCount ? esc( pCount + ' reseau(x)' ) : empty;
+			case 'shortcode':
+				return s.shortcode ? esc( s.shortcode.substring( 0, 80 ) ) : empty;
 			default:
 				return '';
 		}
@@ -458,6 +460,11 @@
 				html += '</div>';
 				html += '<button type="button" class="button spb-repeater-add"><span class="dashicons dashicons-plus-alt2"></span> ' + esc( i18n.addItem || 'Ajouter' ) + '</button>';
 				html += '</div>';
+				break;
+
+			case 'shortcode':
+				html += '<textarea class="spb-shortcode-field" id="' + id + '" data-key="' + key + '" rows="2" placeholder="' + esc( def.placeholder || '' ) + '">' + esc( value || '' ) + '</textarea>';
+				html += '<p class="spb-field-hint">' + esc( i18n.shortcodeHint || '' ) + '</p>';
 				break;
 
 			case 'image':

@@ -630,6 +630,22 @@
 	justify-content: center;
 }
 
+/* ----- Champ "shortcode" ----- */
+
+.spb-shortcode-field {
+	width: 100%;
+	box-sizing: border-box;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+}
+
+.spb-field-hint {
+	margin: 6px 0 0;
+	font-size: 12px;
+	color: #646970;
+	font-style: italic;
+}
+
 .spb-image-field .spb-image-preview {
 	margin-bottom: 8px;
 	min-height: 40px;

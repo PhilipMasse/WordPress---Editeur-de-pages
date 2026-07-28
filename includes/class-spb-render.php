@@ -167,6 +167,10 @@ class SPB_Render {
 					$clean[ $key ] = self::sanitize_repeater( $raw_value, isset( $def['item_fields'] ) ? $def['item_fields'] : array() );
 					break;
 
+				case 'shortcode':
+					$clean[ $key ] = self::sanitize_shortcode( $raw_value );
+					break;
+
 				case 'select':
 					$options = isset( $def['options'] ) ? array_map( 'strval', array_keys( $def['options'] ) ) : array();
 					$raw_str = (string) $raw_value;
@@ -192,7 +196,17 @@ class SPB_Render {
 	}
 
 	/**
-	 * Sanitise un texte multi-lignes (ex : items de liste) en nettoyant
+	 * Sanitise un shortcode : retire uniquement d'eventuelles balises HTML
+	 * (un shortcode n'en contient normalement pas), sans toucher au reste
+	 * (crochets, guillemets, %, esperluettes des URLs...) contrairement a
+	 * sanitize_text_field() qui aurait pu alterer des parametres d'URL.
+	 */
+	private static function sanitize_shortcode( $value ) {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+		return trim( wp_strip_all_tags( $value, false ) );
+	}
 	 * chaque ligne independamment (suppression des balises, entites...)
 	 * puis en reassemblant avec de vrais retours a la ligne "\n".
 	 * Cette approche explicite garantit que les retours a la ligne
@@ -436,6 +450,9 @@ class SPB_Render {
 
 			case 'social':
 				return self::render_social( $s );
+
+			case 'shortcode':
+				return self::render_shortcode( $s );
 
 			default:
 				return '';
@@ -742,6 +759,21 @@ class SPB_Render {
 		}
 
 		return '<div class="spb-el spb-social ' . esc_attr( $size_class . $style_class ) . ' spb-align-' . esc_attr( $s['align'] ) . '">' . $links . '</div>';
+	}
+
+	/**
+	 * Execute et affiche un shortcode saisi tel quel par l'administrateur.
+	 * Seuls les utilisateurs disposant deja des droits d'edition du site
+	 * peuvent renseigner ce champ (comme pour le contenu classique de
+	 * WordPress, ou do_shortcode() s'applique deja sur le contenu redige
+	 * par un utilisateur autorise) : le niveau de confiance requis est le
+	 * meme que pour l'editeur natif de WordPress.
+	 */
+	private static function render_shortcode( $s ) {
+		if ( empty( $s['shortcode'] ) ) {
+			return '';
+		}
+		return '<div class="spb-el spb-shortcode">' . do_shortcode( $s['shortcode'] ) . '</div>';
 	}
 
 	private static function render_list( $s ) {

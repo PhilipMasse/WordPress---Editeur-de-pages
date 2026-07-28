@@ -99,6 +99,7 @@ class SPB_Metabox {
 					'chooseImage'   => __( 'Choisir une image', 'simple-page-builder' ),
 					'linkUrl'       => __( 'URL du lien :', 'simple-page-builder' ),
 					'addItem'       => __( 'Ajouter une question', 'simple-page-builder' ),
+					'shortcodeHint' => __( 'Collez ici un shortcode WordPress (le votre ou celui d\'une autre extension). Il sera execute exactement comme dans l\'editeur classique.', 'simple-page-builder' ),
 				),
 			)
 		);

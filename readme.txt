@@ -3,10 +3,17 @@ Contributors: Mairie de Berre-les-Alpes
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.6
+Stable tag: 1.5.0
 
 Un constructeur de page visuel par glisser-deposer, simple d'utilisation,
 inspire de WPBakery Page Builder.
+
+== Nouveautes 1.5.0 ==
+
+* Nouveau bloc "Shortcode" : permet de coller n'importe quel shortcode
+  WordPress (les vôtres, comme [berre_calendrier_agenda], ou ceux d'une
+  autre extension comme un formulaire de contact) directement dans le
+  constructeur. Il s'execute exactement comme dans l'editeur classique.
 
 == Nouveautes 1.4.6 ==
 

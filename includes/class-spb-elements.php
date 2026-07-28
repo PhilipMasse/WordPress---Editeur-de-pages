@@ -834,6 +834,19 @@ class SPB_Elements {
 					),
 				),
 			),
+
+			'shortcode' => array(
+				'label'  => __( 'Shortcode', 'simple-page-builder' ),
+				'icon'   => 'dashicons-editor-code',
+				'fields' => array(
+					'shortcode' => array(
+						'type'        => 'shortcode',
+						'label'       => __( 'Code du shortcode', 'simple-page-builder' ),
+						'default'     => '',
+						'placeholder' => __( 'Ex. [contact-form-7 id="123"] ou [berre_calendrier_agenda]', 'simple-page-builder' ),
+					),
+				),
+			),
 		);
 	}
 
