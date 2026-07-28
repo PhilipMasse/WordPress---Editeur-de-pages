@@ -207,6 +207,9 @@ class SPB_Render {
 		}
 		return trim( wp_strip_all_tags( $value, false ) );
 	}
+
+	/**
+	 * Sanitise un texte multi-lignes (ex : items de liste) en nettoyant
 	 * chaque ligne independamment (suppression des balises, entites...)
 	 * puis en reassemblant avec de vrais retours a la ligne "\n".
 	 * Cette approche explicite garantit que les retours a la ligne
